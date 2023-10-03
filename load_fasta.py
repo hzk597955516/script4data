@@ -230,4 +230,4 @@ if __name__ == "__main__":
     pids = list(data['pdb_code'])
     generate_seq2pid_id_csv(pids=pids,
                             mmcif_dir_path=mmcif_root, 
-                            save_path='./seq2pid_id/test_au.csv')
+                            save_path='./seq2pid_id/gpcr_au.csv')

@@ -33,9 +33,9 @@ def iterate_dir(dir_path):
     return result
 
 
-def iterate_a_seq(chains, pdb_dir_path, num):
+def iterate_a_seq(chains, pdb_dir_path, num, tm_thres=0.7):
 
-    result = []
+    pairs = []
     num_chain = len(chains)
     dont_use = set()
 
@@ -59,38 +59,38 @@ def iterate_a_seq(chains, pdb_dir_path, num):
             next_path = os.path.join(pdb_dir_path, next_chain[:4], next_chain + '.pdb')
 
             try:
-                tm = TMscore(cur_path, next_path)
+                tm = TMscore(cur_path, next_path, is_display_detail=True)
 
             except Exception as e:
                 print('--- Error occur when comparing ' + cur_chain + ' ' + next_chain + ' ! ---')
 
             # print(cur_chain + ' ' + next_chain + ' is {}'.format(tm))
 
-            if tm <= 1:
-                result.append([cur_chain, next_chain, tm])
+            if tm <= tm_thres:
+                pairs.append([cur_chain, next_chain, tm])
 
         print('--- {}th : {}th chain is over !---'.format(num, i))
 
-    return result
+    return pairs
 
 
-def iterate_all(seqs, pdb_dir_path):
+def iterate_all(seq2pid_id, pdb_dir_path):
 
-    result = []
-    candidates = list(seqs.values())
+    all_pairs = []
+    candidates = list(seq2pid_id.values())[: 15]
 
     num = 0
     for chains in candidates:
         print('--- begining to select the {}th seq ! ---'.format(num))
-        output = iterate_a_seq(chains, pdb_dir_path, num)
+        pairs = iterate_a_seq(chains, pdb_dir_path, num)
 
-        if len(output) > 0:
-            result += output
+        if len(pairs) > 0:
+            all_pairs += pairs
 
         print('--- the {}th seq is Ok ! ---'.format(num))
         num += 1
 
-    return result
+    return all_pairs
     
 
 def TMscore(pid_id_1, pid_id_2, is_display_detail=False):
@@ -188,5 +188,5 @@ if __name__ == '__main__':
     # check_pair('7FIM_P', '7RGP_P')
     # random_check_all('./name_idx/test_gpcr_tmscore_all.csv', n_sample=1)
 
-    align_pairs(pid_id_1='1AEL_A', pid_id_2='1URE_A', is_display_detail=True)
+    align_pairs(pid_id_1='7TYF_P', pid_id_2='7TYI_P', is_display_detail=True)
     
