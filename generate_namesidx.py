@@ -7,7 +7,7 @@ import pandas as pd
 from mmcif_parsing import parse as mmcif_parse
 from Bio.PDB.PDBExceptions import PDBConstructionException
 from utlity import seq2pid_id_to_dict, pairs_to_nameidx
-from comparison import seq2pid_id_to_pairs
+from comparison import seq2pid_id_to_pairs, TMscore
 from down_mmcif import download_mmcif_from_list
 from build_pdb import cut_mmcif_from_list
 from load_fasta import generate_seq2pid_id_csv
@@ -47,21 +47,47 @@ def seq2pid_id_to_name_idx(seq2pid_id_file_path, pdb_dir_path, name_idx_file_pat
 def apo2pids():
 
     pids = set()
-    data = pd.read_csv(os.path.join(pids_root, 'apo.csv'))
+    data = pd.read_csv(os.path.join(pids_root, 'codnas.csv'))
     my_dicts = data.to_dict('records')
+    pairs = []
+    
     for dict_ in my_dicts:
-        pids.add(dict_['name'][:4].upper())
-        pids.add(dict_['holo'][:4].upper())
+        pid_1, idx_1 = dict_['name'][:4].upper(), dict_['name'][5]
+        pid_2, idx_2 = dict_['other'][:4].upper(), dict_['other'][5]
+        tm = TMscore(os.path.join(pdb_root, pid_1, pid_1 + '_' + idx_1 + '.pdb'), 
+                os.path.join(pdb_root, pid_2, pid_2 + '_' + idx_2 + '.pdb'))
+        pairs.append([pid_1 + '_' + idx_1, pid_2 + '_' + idx_2, tm])
+    
+    pairs_to_nameidx(pairs, os.path.join(name_idx_root, '(eigenfold)fs_TMscore_au.csv'))
+    
 
-    return list(pids)
+
+def fs2pids():
+    
+    pids = set()
+    data = pd.read_csv(os.path.join(pids_root, 'codnas_orig.csv'))
+    my_dicts = data.to_dict('records')
+    pairs = []
+    for dict_ in my_dicts:
+        pid_1, idx_1 = dict_['Fold1'][:4].upper(), dict_['Fold1'][4]
+        pid_2, idx_2 = dict_['Fold2'][:4].upper(), dict_['Fold2'][4]
+        tm = TMscore(os.path.join(pdb_root, pid_1, pid_1 + '_' + idx_1 + '.pdb'), 
+                os.path.join(pdb_root, pid_2, pid_2 + '_' + idx_2 + '.pdb'))
+        pairs.append([pid_1 + '_' + idx_1, pid_2 + '_' + idx_2, tm])
+    
+    pairs_to_nameidx(pairs, os.path.join(name_idx_root, '(eigenfold)fs_TMscore_au.csv'))
 
 
-if __name__ == '__main__':
-    pids = apo2pids()
-    # prepare_data(pids)
-    # extract_data(pids, os.path.join(seq2pid_id_root, 'apo_holo_au.csv'))
+def one_step():
+    
     seq2pid_id_to_name_idx(seq2pid_id_file_path=os.path.join(seq2pid_id_root, 'apo_holo_au.csv'),
                            pdb_dir_path=pdb_root,
                            name_idx_file_path=os.path.join(name_idx_root, 'apo_holo_TMscore_au.csv'), 
                            tm_thres=0.7,
                            is_display_detail=False)
+    
+    
+if __name__ == '__main__':
+    # prepare_data(pids)
+    # extract_data(pids, os.path.join(seq2pid_id_root, 'fs_au.csv'))
+    apo2pids()

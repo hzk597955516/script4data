@@ -191,10 +191,10 @@ if __name__ == '__main__':
     # check_pair('7FIM_P', '7RGP_P')
     # random_check_all('./name_idx/test_gpcr_tmscore_all.csv', n_sample=1)
 
-    # align_pairs(pid_id_1='1GY9_A', pid_id_2='1OTJ_D', is_display_detail=True)
+    # align_pairs(pid_id_1='4QHF_A', pid_id_2='4QHH_A', is_display_detail=True)
     # chains1 = ['1HSH_A', '1HSH_B', '1HSH_C', '1HSH_D', '1HSI_A', '1HSI_B']
     # chains2 = ['1Q95_A', '1Q95_B', '1Q95_C', '1Q95_D', '1Q95_E', '1Q95_F', '1ZA1_A', '1ZA1_C']
     # print(TMscore(pid_id_1='C:/Research_Foundation/data/protein_data_bank/1HSI/1HSI_B.pdb', pid_id_2='C:/Research_Foundation/data/protein_data_bank/1HSH/1HSH_D.pdb', 
     # is_display_detail=True))
     # pairs = iterate_a_seq(chains2, pdb_root, 0, tm_thres=1)
-    random_check_all(name_idx_path=os.path.join(name_idx_root, 'apo_holo_TMscore_au.csv'))
+    random_check_all(name_idx_path=os.path.join(name_idx_root, '(eigenfold)fs_TMscore_au.csv'))
