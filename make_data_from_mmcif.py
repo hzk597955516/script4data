@@ -147,6 +147,9 @@ def process4protein_au(pid, args):
     # logging.info(f'{pid}, {",".join(full_pid)}')
     mmcif_file = os.path.join(args.pdb_dir, f'{pid}.cif')
     
+    if not os.path.exists(mmcif_file):
+        print(f'--- {pid}.cif doesnt exists ! ---')
+
     try:
         parsing_result = mmcif_parse(file_id=pid, mmcif_file=mmcif_file)
 

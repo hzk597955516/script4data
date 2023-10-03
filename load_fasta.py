@@ -8,6 +8,8 @@ from tqdm import tqdm
 from mmcif_parsing import parse as mmcif_parse
 from Bio.PDB.PDBExceptions import PDBConstructionException
 
+from down_mmcif import download_mmcif
+
 pdb_root = 'C:/Research_Foundation/data/protein_data_bank'
 mmcif_root = 'C:/Research_Foundation/data/mmcifs'
 
@@ -204,6 +206,9 @@ def get_seq2pid_id_by_pids(pids, mmcif_dir_path):
 
         # print('--- begin ' + pid + '! ---')
         pid_path = os.path.join(mmcif_dir_path, pid + '.cif')
+        if not os.path.exists(pid_path):
+            download_mmcif(pid, pid_path)
+            
         chain2seq = load_mmcif(pid, pid_path)
 
         for id, res in chain2seq.items():

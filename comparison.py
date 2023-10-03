@@ -33,7 +33,7 @@ def iterate_dir(dir_path):
     return result
 
 
-def iterate_a_seq(chains, pdb_dir_path, num, tm_thres=0.7):
+def iterate_a_seq(chains, pdb_dir_path, num, tm_thres=0.7, is_display_detail=False):
 
     pairs = []
     num_chain = len(chains)
@@ -59,7 +59,7 @@ def iterate_a_seq(chains, pdb_dir_path, num, tm_thres=0.7):
             next_path = os.path.join(pdb_dir_path, next_chain[:4], next_chain + '.pdb')
 
             try:
-                tm = TMscore(cur_path, next_path, is_display_detail=True)
+                tm = TMscore(cur_path, next_path, is_display_detail=is_display_detail)
 
             except Exception as e:
                 print('--- Error occur when comparing ' + cur_chain + ' ' + next_chain + ' ! ---')
@@ -74,15 +74,15 @@ def iterate_a_seq(chains, pdb_dir_path, num, tm_thres=0.7):
     return pairs
 
 
-def iterate_all(seq2pid_id, pdb_dir_path):
+def seq2pid_id_to_pairs(seq2pid_id, pdb_dir_path, tm_thres=0.7, is_display_detail=False):
 
     all_pairs = []
-    candidates = list(seq2pid_id.values())[: 15]
+    candidates = list(seq2pid_id.values())
 
     num = 0
     for chains in candidates:
         print('--- begining to select the {}th seq ! ---'.format(num))
-        pairs = iterate_a_seq(chains, pdb_dir_path, num)
+        pairs = iterate_a_seq(chains, pdb_dir_path, num, tm_thres=tm_thres, is_display_detail=is_display_detail)
 
         if len(pairs) > 0:
             all_pairs += pairs

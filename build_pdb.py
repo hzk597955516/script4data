@@ -29,7 +29,7 @@ def build_all(seq2chains, mmcif_dir, output_dir):
         build_A_seq(pid_same_chains=chains, mmcif_dir=mmcif_dir, output_dir=outpath)
 
 
-def divide_all(pids, mmcif_dir, output_dir):
+def cut_mmcif_from_list(pids, mmcif_dir, output_dir):
 
     parser = argparse.ArgumentParser()
     args = parser.parse_args()
