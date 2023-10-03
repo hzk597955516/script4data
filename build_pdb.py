@@ -69,7 +69,7 @@ def test1():
 
     pids = list(pid_only)
     
-    divide_all(pids=pids, mmcif_dir='.\\mmCif', output_dir='.\\pdb_result')
+    cut_mmcif_from_list(pids=pids, mmcif_dir='.\\mmCif', output_dir='.\\pdb_result')
 
 
 if __name__ == '__main__':

@@ -63,5 +63,5 @@ if __name__ == '__main__':
     seq2pid_id_to_name_idx(seq2pid_id_file_path=os.path.join(seq2pid_id_root, 'apo_holo_au.csv'),
                            pdb_dir_path=pdb_root,
                            name_idx_file_path=os.path.join(name_idx_root, 'apo_holo_TMscore_au.csv'), 
-                           tm_thres=1,
+                           tm_thres=0.7,
                            is_display_detail=False)

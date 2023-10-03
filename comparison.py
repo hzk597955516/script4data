@@ -14,6 +14,10 @@ from utlity import mkdir, nameidx2dict
 
 pdb_root = 'C:/Research_Foundation/data/protein_data_bank'
 mmcif_root = 'C:/Research_Foundation/data/mmcifs'
+name_idx_root = 'C:/Research_Foundation/data/name_idxs'
+seq2pid_id_root = 'C:/Research_Foundation/data/seq2pid_id'
+pids_root = 'C:/Research_Foundation/data/raw_pairs_data'
+
 
 def iterate_dir(dir_path):
 
@@ -38,14 +42,12 @@ def iterate_a_seq(chains, pdb_dir_path, num, tm_thres=0.7, is_display_detail=Fal
     pairs = []
     num_chain = len(chains)
     dont_use = set()
-
     for i in range(num_chain):
 
         cur_chain = chains[i]
-
-        if cur_chain[: 4] in dont_use: continue
-
+        if cur_chain[:4] in dont_use: continue
         cur_path = os.path.join(pdb_dir_path, cur_chain[:4], cur_chain + '.pdb')
+
         print('--- Now is {}th : {}th chain !---'.format(num, i))
 
         for j in range(i + 1, num_chain):
@@ -53,8 +55,7 @@ def iterate_a_seq(chains, pdb_dir_path, num, tm_thres=0.7, is_display_detail=Fal
             next_chain = chains[j]
             
             if cur_chain[:4] == next_chain[:4]: 
-                dont_use.add(cur_chain[:4])
-                break
+                continue
 
             next_path = os.path.join(pdb_dir_path, next_chain[:4], next_chain + '.pdb')
 
@@ -70,6 +71,8 @@ def iterate_a_seq(chains, pdb_dir_path, num, tm_thres=0.7, is_display_detail=Fal
                 pairs.append([cur_chain, next_chain, tm])
 
         print('--- {}th : {}th chain is over !---'.format(num, i))
+
+        dont_use.add(cur_chain[:4])
 
     return pairs
 
@@ -125,7 +128,7 @@ def display_pymol(pid_id_1, pid_id_2, pdb_dir_path, caches_path='./cache4display
     subprocess.Popen('pymol ' + pair_cache)
     
 
-def check_pair(pid_id_1, pid_id_2, pdb_dir_path='./gpcr_pdbs', caches_path='./cache4display', is_display_detail=False):
+def check_pair(pid_id_1, pid_id_2, pdb_dir_path=pdb_root, caches_path='./cache4display', is_display_detail=False):
 
     c1_path = os.path.join(pdb_dir_path, pid_id_1[:4], pid_id_1 + '.pdb')
     c2_path = os.path.join(pdb_dir_path, pid_id_2[:4], pid_id_2 + '.pdb')
@@ -188,5 +191,10 @@ if __name__ == '__main__':
     # check_pair('7FIM_P', '7RGP_P')
     # random_check_all('./name_idx/test_gpcr_tmscore_all.csv', n_sample=1)
 
-    align_pairs(pid_id_1='7TYF_P', pid_id_2='7TYI_P', is_display_detail=True)
-    
+    # align_pairs(pid_id_1='1GY9_A', pid_id_2='1OTJ_D', is_display_detail=True)
+    # chains1 = ['1HSH_A', '1HSH_B', '1HSH_C', '1HSH_D', '1HSI_A', '1HSI_B']
+    # chains2 = ['1Q95_A', '1Q95_B', '1Q95_C', '1Q95_D', '1Q95_E', '1Q95_F', '1ZA1_A', '1ZA1_C']
+    # print(TMscore(pid_id_1='C:/Research_Foundation/data/protein_data_bank/1HSI/1HSI_B.pdb', pid_id_2='C:/Research_Foundation/data/protein_data_bank/1HSH/1HSH_D.pdb', 
+    # is_display_detail=True))
+    # pairs = iterate_a_seq(chains2, pdb_root, 0, tm_thres=1)
+    random_check_all(name_idx_path=os.path.join(name_idx_root, 'apo_holo_TMscore_au.csv'))
