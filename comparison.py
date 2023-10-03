@@ -188,5 +188,5 @@ if __name__ == '__main__':
     # check_pair('7FIM_P', '7RGP_P')
     # random_check_all('./name_idx/test_gpcr_tmscore_all.csv', n_sample=1)
 
-    align_pairs(pid_id_1='3T5O_A', pid_id_2='4A5W_B', is_display_detail=True)
+    align_pairs(pid_id_1='1AEL_A', pid_id_2='1URE_A', is_display_detail=True)
     
