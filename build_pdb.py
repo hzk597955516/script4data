@@ -3,6 +3,7 @@ import argparse
 import numpy as np
 import os
 import pandas as pd
+import tqdm
 
 from save_pdb import save_general_pdb
 from utlity import seq2pid_id_to_dict, mkdir
@@ -36,7 +37,7 @@ def cut_mmcif_from_list(pids, mmcif_dir, output_dir):
     args.pdb_dir = mmcif_dir
     args.output_dir = output_dir
 
-    for pid in pids:
+    for pid in tqdm.tqdm(pids):
         if os.path.exists(os.path.join(output_dir, pid)): continue
         if len(pid) == 4:
             process4protein_au(pid, args)

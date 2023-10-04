@@ -229,18 +229,19 @@ def parse(*,
                                              is_missing=False,
                                              hetflag=hetflag)
         seq_to_structure_mappings[atom.author_chain_id] = current
-
+    
     # Add missing residue information to seq_to_structure_mappings.
     for chain_id, seq_info in valid_chains.items():
       author_chain = mmcif_to_author_chain_id[chain_id]
       current_mapping = seq_to_structure_mappings[author_chain]
       for idx, monomer in enumerate(seq_info):
+        
         if idx not in current_mapping:
           current_mapping[idx] = ResidueAtPosition(position=None,
                                                    name=monomer.id,
                                                    is_missing=True,
                                                    hetflag=' ')
-
+    
     author_chain_to_sequence = {}
     for chain_id, seq_info in valid_chains.items():
       author_chain = mmcif_to_author_chain_id[chain_id]
@@ -250,7 +251,7 @@ def parse(*,
         seq.append(code if len(code) == 1 else 'X')
       seq = ''.join(seq)
       author_chain_to_sequence[author_chain] = seq
-
+      
     mmcif_object = MmcifObject(
         file_id=file_id,
         header=header,

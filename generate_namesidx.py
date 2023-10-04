@@ -8,14 +8,14 @@ from mmcif_parsing import parse as mmcif_parse
 from Bio.PDB.PDBExceptions import PDBConstructionException
 from utlity import seq2pid_id_to_dict, pairs_to_nameidx
 from comparison import seq2pid_id_to_pairs, TMscore
-from down_mmcif import download_mmcif_from_list
+from down_mmcif import download_mmcif_from_list, download_mmcif_quick
 from build_pdb import cut_mmcif_from_list
 from load_fasta import generate_seq2pid_id_csv
 
 logger = logging.getLogger()
 
-pdb_root = 'C:/Research_Foundation/data/protein_data_bank'
-mmcif_root = 'C:/Research_Foundation/data/mmcifs'
+pdb_root = 'C:/Research_Foundation/data/protein_data_bank_kinase'
+mmcif_root = 'C:/Research_Foundation/data/mmcifs_kinase'
 name_idx_root = 'C:/Research_Foundation/data/name_idxs'
 seq2pid_id_root = 'C:/Research_Foundation/data/seq2pid_id'
 pids_root = 'C:/Research_Foundation/data/raw_pairs_data'
@@ -78,6 +78,16 @@ def fs2pids():
     pairs_to_nameidx(pairs, os.path.join(name_idx_root, '(eigenfold)fs_TMscore_au.csv'))
 
 
+def kinase2pids():
+    pids = set()
+    files = os.listdir('C:/Research_Foundation/data/human_kinase')
+    for file in files:
+        if file[-8] == '-': 
+            continue
+        pids.add(file[-9: -5])
+    return list(pids)
+    
+    
 def one_step():
     
     seq2pid_id_to_name_idx(seq2pid_id_file_path=os.path.join(seq2pid_id_root, 'apo_holo_au.csv'),
@@ -86,8 +96,19 @@ def one_step():
                            tm_thres=0.7,
                            is_display_detail=False)
     
+
+def kinase_pids():
+    pids = []
+    files = os.listdir(mmcif_root)
+    for file in files:
+        pids.append(file[:4])
+    return pids
+    
+    
     
 if __name__ == '__main__':
+    pids = kinase_pids()
+    # print(len(pids))
     # prepare_data(pids)
+    # dont forget to cut them !
     # extract_data(pids, os.path.join(seq2pid_id_root, 'fs_au.csv'))
-    apo2pids()
