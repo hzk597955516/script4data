@@ -74,16 +74,5 @@ def test1():
 
 
 if __name__ == '__main__':
-    data = seq2pid_id_to_dict('./seq2pid_id/gpcr.csv')
-    pids = []
-    for v in list(data.values()):
-        pids += v
-
-    pid_only = set()
-
-    for pid in pids:
-        pid_only.add(pid[: 4])
-
-    pids = list(pid_only)
-    
-    # divide_all(pids=pids, mmcif_dir='.\\mmCif', output_dir='.\\pdb_result_au')
+    cut_mmcif_from_list(['7ENC'], mmcif_dir='C:/Research_Foundation/data/mmcifs_kinase',
+                        output_dir='./test4chains')

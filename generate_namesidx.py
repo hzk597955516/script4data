@@ -24,7 +24,7 @@ pids_root = 'C:/Research_Foundation/data/raw_pairs_data'
 def prepare_data(pids):
 
     print('--- Downloading ---')
-    download_mmcif_from_list(pids, mmcif_root)
+    # download_mmcif_from_list(pids, mmcif_root)
     print('--- Downloading Over ---')
     print('--- Cutting ---')
     cut_mmcif_from_list(pids, mmcif_root, pdb_root)
@@ -90,9 +90,9 @@ def kinase2pids():
     
 def one_step():
     
-    seq2pid_id_to_name_idx(seq2pid_id_file_path=os.path.join(seq2pid_id_root, 'apo_holo_au.csv'),
+    seq2pid_id_to_name_idx(seq2pid_id_file_path=os.path.join(seq2pid_id_root, 'kinase_au.csv'),
                            pdb_dir_path=pdb_root,
-                           name_idx_file_path=os.path.join(name_idx_root, 'apo_holo_TMscore_au.csv'), 
+                           name_idx_file_path=os.path.join(name_idx_root, 'kinase_TMscore_au.csv'), 
                            tm_thres=0.7,
                            is_display_detail=False)
     
@@ -111,4 +111,11 @@ if __name__ == '__main__':
     # print(len(pids))
     # prepare_data(pids)
     # dont forget to cut them !
-    # extract_data(pids, os.path.join(seq2pid_id_root, 'fs_au.csv'))
+    # extract_data(pids, os.path.join(seq2pid_id_root, 'kinase_au.csv'))
+    seq2pid_id_to_name_idx(seq2pid_id_file_path=os.path.join(seq2pid_id_root, 'kinase_au.csv'),
+                           pdb_dir_path=pdb_root,
+                           name_idx_file_path=os.path.join(name_idx_root, 'kinase_TMscore_au.csv'), 
+                           tm_thres=0.7,
+                           is_display_detail=False)
+    
+    

@@ -177,10 +177,11 @@ def process4protein_au(pid, args):
 
         str_seq = parsing_result.mmcif_object.chain_to_seqres[c2a[chain_id]]
         seqres_to_structure = parsing_result.mmcif_object.seqres_to_structure[c2a[chain_id]]
-
+        file_id = c2a[chain_id]
+        if file_id.islower(): file_id += '_'
         try:
             feature = make_npz(pid, chain_id, str_seq, seqres_to_structure, struc[c2a[chain_id]], args)
-            save_general_pdb(str_seq=feature['seq'], coord=feature['coords'], pdb_path=os.path.join(next_output_dir, pid + '_' + c2a[chain_id] + '.pdb'))
+            save_general_pdb(str_seq=feature['seq'], coord=feature['coords'], pdb_path=os.path.join(next_output_dir, pid + '_' + file_id + '.pdb'))
 
         except Exception as e:
             logging.error(f'make structure: {mmcif_file} {c2a[chain_id]} {str(e)}')

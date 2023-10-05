@@ -35,7 +35,7 @@ def parse_pdb(pdb_file, model=0):
 
         pdb = PDBIO()
         pdb.set_structure(model)
-        pdb.save(id_ + '1.pdb')
+        pdb.save('./test4chains/' + id_ + '2.pdb')
 
     return structure
 
@@ -55,6 +55,6 @@ def get_seq_from_pdb(pdb_file_path):
 if __name__ == "__main__":
     print('begin_test')
     # cut_mmcif('6Z4U', mmcif_root, './test4chains')
-    res1 = 'MDPKISEMHPALRLVDPQIQLAVTRPKVYPIILRLGSPLSLNMARKTLNSLEDKAFQLTPIAVQMTKLATTEELPDEFVVVTVK'
-    res2 = get_seq_from_pdb('./test4chains/6Z4U/6Z4U_A.pdb')
+    # res1 = 'MDPKISEMHPALRLVDPQIQLAVTRPKVYPIILRLGSPLSLNMARKTLNSLEDKAFQLTPIAVQMTKLATTEELPDEFVVVTVK'
+    # res2 = get_seq_from_pdb('./test4chains/6Z4U/6Z4U_A.pdb')
     

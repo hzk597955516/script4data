@@ -12,8 +12,8 @@ from down_mmcif import download_mmcif
 from utlity import mkdir, nameidx2dict
 
 
-pdb_root = 'C:/Research_Foundation/data/protein_data_bank'
-mmcif_root = 'C:/Research_Foundation/data/mmcifs'
+pdb_root = 'C:/Research_Foundation/data/protein_data_bank_kinase'
+mmcif_root = 'C:/Research_Foundation/data/mmcifs_kinase'
 name_idx_root = 'C:/Research_Foundation/data/name_idxs'
 seq2pid_id_root = 'C:/Research_Foundation/data/seq2pid_id'
 pids_root = 'C:/Research_Foundation/data/raw_pairs_data'
@@ -31,7 +31,7 @@ def iterate_dir(dir_path):
         for j in range(i + 1, num):
             next_path = os.path.join(dir_path, file_names[j])
 
-            if TMscore(cur_path, next_path) <= 0.7:
+            if TMalign(cur_path, next_path) <= 0.7:
                 result.append([file_names[i][:6], file_names[j][:6]])
 
     return result
@@ -45,22 +45,27 @@ def iterate_a_seq(chains, pdb_dir_path, num, tm_thres=0.7, is_display_detail=Fal
     for i in range(num_chain):
 
         cur_chain = chains[i]
+        cur_id = cur_chain.split('_')[-1]
+        if cur_id.islower(): cur_id += '_'
         if cur_chain[:4] in dont_use: continue
-        cur_path = os.path.join(pdb_dir_path, cur_chain[:4], cur_chain + '.pdb')
+        
+        cur_path = os.path.join(pdb_dir_path, cur_chain[:4], cur_chain[:4] + '_' + cur_id + '.pdb')
 
         print('--- Now is {}th : {}th chain !---'.format(num, i))
 
         for j in range(i + 1, num_chain):
 
             next_chain = chains[j]
+            next_id = next_chain.split('_')[-1]
+            if next_id.islower(): next_id += '_'
             
             if cur_chain[:4] == next_chain[:4]: 
                 continue
 
-            next_path = os.path.join(pdb_dir_path, next_chain[:4], next_chain + '.pdb')
+            next_path = os.path.join(pdb_dir_path, next_chain[:4], next_chain[:4] + '_' + next_id + '.pdb')
 
             try:
-                tm = TMscore(cur_path, next_path, is_display_detail=is_display_detail)
+                tm = TMalign(cur_path, next_path, is_display_detail=is_display_detail)
 
             except Exception as e:
                 print('--- Error occur when comparing ' + cur_chain + ' ' + next_chain + ' ! ---')
@@ -96,7 +101,7 @@ def seq2pid_id_to_pairs(seq2pid_id, pdb_dir_path, tm_thres=0.7, is_display_detai
     return all_pairs
     
 
-def TMscore(pid_id_1, pid_id_2, is_display_detail=False):
+def TMalign(pid_id_1, pid_id_2, is_display_detail=False):
     
     output = subprocess.getoutput('TMalign ' + pid_id_1 + ' ' + pid_id_2)
     if is_display_detail:
@@ -108,7 +113,16 @@ def TMscore(pid_id_1, pid_id_2, is_display_detail=False):
     return max(output1, output2) 
 
 
-def display_pymol(pid_id_1, pid_id_2, pdb_dir_path, caches_path='./cache4display', TMscore=None):
+def TMscore(pid_id_1, pid_id_2, is_display_detail=False):
+    output = subprocess.getoutput('TMscore ' + pid_id_1 + ' ' + pid_id_2)
+    if is_display_detail:
+        print(output)
+    output = output.split('\n')
+    output = float(output[16][14: 20])
+    return output
+    
+    
+def display_pymol(pid_id_1, pid_id_2, pdb_dir_path, caches_path='./cache4display', TMalign=None):
 
     c1_path = os.path.join(pdb_dir_path, pid_id_1[:4], pid_id_1 + '.pdb')
     c2_path = os.path.join(pdb_dir_path, pid_id_2[:4], pid_id_2 + '.pdb')
@@ -117,7 +131,7 @@ def display_pymol(pid_id_1, pid_id_2, pdb_dir_path, caches_path='./cache4display
              f'align {pid_id_1}, {pid_id_2}\n', 
              'cmd.set(\'seq_view\', 1)\n']
     
-    if TMscore: lines.append(f'print(f\'TMscore: {TMscore}\')')
+    if TMalign: lines.append(f'print(f\'TMalign: {TMalign}\')')
 
     pair_cache = os.path.join(caches_path, f'{pid_id_1}_{pid_id_2}.pml')
 
@@ -128,13 +142,19 @@ def display_pymol(pid_id_1, pid_id_2, pdb_dir_path, caches_path='./cache4display
     subprocess.Popen('pymol ' + pair_cache)
     
 
-def check_pair(pid_id_1, pid_id_2, pdb_dir_path=pdb_root, caches_path='./cache4display', is_display_detail=False):
-
+def check_pair(pid_id_1, pid_id_2, pdb_dir_path=pdb_root, caches_path='./cache4display', is_display_detail=False, is_align=True):
+    
+    if pid_id_1.split('_')[-1].islower(): pid_id_1 += '_'
+    if pid_id_2.split('_')[-1].islower(): pid_id_2 += '_'
+    
     c1_path = os.path.join(pdb_dir_path, pid_id_1[:4], pid_id_1 + '.pdb')
     c2_path = os.path.join(pdb_dir_path, pid_id_2[:4], pid_id_2 + '.pdb')
-    TM = TMscore(c1_path, c2_path, is_display_detail=is_display_detail)
-    # print(f'TMscore: {TM}')
-    display_pymol(pid_id_1, pid_id_2, pdb_dir_path, caches_path, TMscore=TM)
+    if is_align:
+        TM = TMalign(c1_path, c2_path, is_display_detail=is_display_detail)
+    else:
+        TM = TMscore(c1_path, c2_path, is_display_detail=is_display_detail)
+    # print(f'TMalign: {TM}')
+    display_pymol(pid_id_1, pid_id_2, pdb_dir_path, caches_path, TMalign=TM)
 
 
 def random_check(name_idx_path, n_sample=10):
@@ -153,7 +173,7 @@ def random_check(name_idx_path, n_sample=10):
         check_pair(cur_pair['chain_A'], cur_pair['chain_B'])
 
 
-def random_check_all(name_idx_path, n_sample=10):
+def random_check_all(name_idx_path, n_sample=10, is_align=True):
 
     pairs_dicts = nameidx2dict(name_idx_path)
     pairs_num = len(pairs_dicts)
@@ -163,7 +183,7 @@ def random_check_all(name_idx_path, n_sample=10):
         idx = random.randint(0, pairs_num - 1)
         cur_pair = pairs_dicts[idx]
         print(cur_pair)
-        check_pair(cur_pair['chain_A'], cur_pair['chain_B'])
+        check_pair(cur_pair['chain_A'], cur_pair['chain_B'], is_align=is_align)
 
 
 def check_pid_data(pid, pid_id, pid_path, mmcif_dir_path, pdb_dir_path):
@@ -177,24 +197,24 @@ def check_pid_data(pid, pid_id, pid_path, mmcif_dir_path, pdb_dir_path):
         cut_mmcif(pid, mmcif_dir_path, pdb_dir_path)
 
 
-def align_pairs(pid_id_1, pid_id_2, mmcif_dir_path=mmcif_root, pdb_dir_path=pdb_root, is_display_detail=True):
+def align_pairs(pid_id_1, pid_id_2, mmcif_dir_path=mmcif_root, pdb_dir_path=pdb_root, is_display_detail=True, is_align=True):
 
     pid1, pid2 = pid_id_1[:4], pid_id_2[:4]
     pid1_path, pid2_path = os.path.join(pdb_dir_path, pid1), os.path.join(pdb_dir_path, pid2)
     check_pid_data(pid1, pid_id_1, pid1_path, mmcif_dir_path, pdb_dir_path)
     check_pid_data(pid2, pid_id_2, pid2_path, mmcif_dir_path, pdb_dir_path)
-    check_pair(pid_id_1, pid_id_2, pdb_dir_path, is_display_detail=is_display_detail)
+    check_pair(pid_id_1, pid_id_2, pdb_dir_path, is_display_detail=is_display_detail, is_align=is_align)
 
 
 if __name__ == '__main__':
-    # print(TMscore(chain_id1='./pdb_result/7E9G/7E9G_E.pdb', chain_id2='./pdb_result/7E9H/7E9H_E.pdb'))
+    # print(TMalign(chain_id1='./pdb_result/7E9G/7E9G_E.pdb', chain_id2='./pdb_result/7E9H/7E9H_E.pdb'))
     # check_pair('7FIM_P', '7RGP_P')
     # random_check_all('./name_idx/test_gpcr_tmscore_all.csv', n_sample=1)
 
-    # align_pairs(pid_id_1='4QHF_A', pid_id_2='4QHH_A', is_display_detail=True)
+    # align_pairs(pid_id_1='7ENC_0', pid_id_2='8BYQ_7', is_display_detail=True, is_align=False)
     # chains1 = ['1HSH_A', '1HSH_B', '1HSH_C', '1HSH_D', '1HSI_A', '1HSI_B']
     # chains2 = ['1Q95_A', '1Q95_B', '1Q95_C', '1Q95_D', '1Q95_E', '1Q95_F', '1ZA1_A', '1ZA1_C']
-    # print(TMscore(pid_id_1='C:/Research_Foundation/data/protein_data_bank/1HSI/1HSI_B.pdb', pid_id_2='C:/Research_Foundation/data/protein_data_bank/1HSH/1HSH_D.pdb', 
+    # print(TMalign(pid_id_1='C:/Research_Foundation/data/protein_data_bank/1HSI/1HSI_B.pdb', pid_id_2='C:/Research_Foundation/data/protein_data_bank/1HSH/1HSH_D.pdb', 
     # is_display_detail=True))
     # pairs = iterate_a_seq(chains2, pdb_root, 0, tm_thres=1)
-    random_check_all(name_idx_path=os.path.join(name_idx_root, '(eigenfold)fs_TMscore_au.csv'))
+    random_check_all(name_idx_path=os.path.join(name_idx_root, 'kinase_TMscore_au.csv'), is_align=False)
