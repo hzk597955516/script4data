@@ -37,8 +37,9 @@ def iterate_dir(dir_path):
     return result
 
 
-def iterate_a_seq(chains, pdb_dir_path, num, tm_thres=0.7, is_display_detail=False):
+def iterate_a_seq(seq2chains, pdb_dir_path, num, tm_thres=0.7, is_display_detail=False):
 
+    seq, chains = seq2chains[0], seq2chains[1]
     pairs = []
     num_chain = len(chains)
     dont_use = set()
@@ -46,6 +47,7 @@ def iterate_a_seq(chains, pdb_dir_path, num, tm_thres=0.7, is_display_detail=Fal
 
         cur_chain = chains[i]
         cur_id = cur_chain.split('_')[-1]
+        cur_len = len(seq)
         if cur_id.islower(): cur_id += '_'
         if cur_chain[:4] in dont_use: continue
         
@@ -65,14 +67,14 @@ def iterate_a_seq(chains, pdb_dir_path, num, tm_thres=0.7, is_display_detail=Fal
             next_path = os.path.join(pdb_dir_path, next_chain[:4], next_chain[:4] + '_' + next_id + '.pdb')
 
             try:
-                tm = TMalign(cur_path, next_path, is_display_detail=is_display_detail)
+                tm, l1, l2 = TMalign(cur_path, next_path, is_display_detail=is_display_detail)
 
             except Exception as e:
                 print('--- Error occur when comparing ' + cur_chain + ' ' + next_chain + ' ! ---')
 
             # print(cur_chain + ' ' + next_chain + ' is {}'.format(tm))
 
-            if tm <= tm_thres:
+            if tm <= tm_thres and l1 / cur_len >= 0.8 and l2 / cur_len >= 0.8:
                 pairs.append([cur_chain, next_chain, tm])
 
         print('--- {}th : {}th chain is over !---'.format(num, i))
@@ -85,7 +87,8 @@ def iterate_a_seq(chains, pdb_dir_path, num, tm_thres=0.7, is_display_detail=Fal
 def seq2pid_id_to_pairs(seq2pid_id, pdb_dir_path, tm_thres=0.7, is_display_detail=False):
 
     all_pairs = []
-    candidates = list(seq2pid_id.values())
+    # candidates = list(seq2pid_id.values())
+    candidates = seq2pid_id
 
     num = 0
     for chains in candidates:
@@ -109,8 +112,9 @@ def TMalign(pid_id_1, pid_id_2, is_display_detail=False):
     output = output.split('\n')
     output1 = float(output[13][10: 17])
     output2 = float(output[14][10: 17])
-
-    return max(output1, output2) 
+    l1 = int(output[9].split(' ')[-2])
+    l2 = int(output[10].split(' ')[-2])
+    return max(output1, output2), l1, l2 
 
 
 def TMscore(pid_id_1, pid_id_2, is_display_detail=False):
@@ -120,8 +124,8 @@ def TMscore(pid_id_1, pid_id_2, is_display_detail=False):
     output = output.split('\n')
     output = float(output[16][14: 20])
     return output
-    
-    
+
+
 def display_pymol(pid_id_1, pid_id_2, pdb_dir_path, caches_path='./cache4display', TMalign=None):
 
     c1_path = os.path.join(pdb_dir_path, pid_id_1[:4], pid_id_1 + '.pdb')
@@ -142,7 +146,7 @@ def display_pymol(pid_id_1, pid_id_2, pdb_dir_path, caches_path='./cache4display
     subprocess.Popen('pymol ' + pair_cache)
     
 
-def check_pair(pid_id_1, pid_id_2, pdb_dir_path=pdb_root, caches_path='./cache4display', is_display_detail=False, is_align=True):
+def check_pair(pid_id_1, pid_id_2, pdb_dir_path=pdb_root, caches_path='./cache4display', is_display_detail=True, is_align=True):
     
     if pid_id_1.split('_')[-1].islower(): pid_id_1 += '_'
     if pid_id_2.split('_')[-1].islower(): pid_id_2 += '_'
@@ -150,7 +154,7 @@ def check_pair(pid_id_1, pid_id_2, pdb_dir_path=pdb_root, caches_path='./cache4d
     c1_path = os.path.join(pdb_dir_path, pid_id_1[:4], pid_id_1 + '.pdb')
     c2_path = os.path.join(pdb_dir_path, pid_id_2[:4], pid_id_2 + '.pdb')
     if is_align:
-        TM = TMalign(c1_path, c2_path, is_display_detail=is_display_detail)
+        TM, _, _ = TMalign(c1_path, c2_path, is_display_detail=is_display_detail)
     else:
         TM = TMscore(c1_path, c2_path, is_display_detail=is_display_detail)
     # print(f'TMalign: {TM}')
@@ -211,10 +215,11 @@ if __name__ == '__main__':
     # check_pair('7FIM_P', '7RGP_P')
     # random_check_all('./name_idx/test_gpcr_tmscore_all.csv', n_sample=1)
 
-    # align_pairs(pid_id_1='7ENC_0', pid_id_2='8BYQ_7', is_display_detail=True, is_align=False)
+    # align_pairs(pid_id_1='7EGB_F', pid_id_2='7EGC_f', is_display_detail=True, is_align=True)
     # chains1 = ['1HSH_A', '1HSH_B', '1HSH_C', '1HSH_D', '1HSI_A', '1HSI_B']
     # chains2 = ['1Q95_A', '1Q95_B', '1Q95_C', '1Q95_D', '1Q95_E', '1Q95_F', '1ZA1_A', '1ZA1_C']
     # print(TMalign(pid_id_1='C:/Research_Foundation/data/protein_data_bank/1HSI/1HSI_B.pdb', pid_id_2='C:/Research_Foundation/data/protein_data_bank/1HSH/1HSH_D.pdb', 
     # is_display_detail=True))
     # pairs = iterate_a_seq(chains2, pdb_root, 0, tm_thres=1)
-    random_check_all(name_idx_path=os.path.join(name_idx_root, 'kinase_TMscore_au.csv'), is_align=False)
+    random_check_all(name_idx_path=os.path.join(name_idx_root, 'kinase_name_idx(Good integrity).csv'), is_align=True)
+    

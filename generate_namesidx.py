@@ -38,8 +38,9 @@ def extract_data(pids, save_path):
 def seq2pid_id_to_name_idx(seq2pid_id_file_path, pdb_dir_path, name_idx_file_path, tm_thres=0.7, is_display_detail=False):
 
     seq2pid_id = seq2pid_id_to_dict(seq2pid_id_file_path)
+    seq2pid_id_list = [[key, value] for key, value in seq2pid_id.items()]
     print('--- Loading is Over ! ---')
-    pairs = seq2pid_id_to_pairs(seq2pid_id, pdb_dir_path, tm_thres=tm_thres, is_display_detail=is_display_detail)
+    pairs = seq2pid_id_to_pairs(seq2pid_id_list, pdb_dir_path, tm_thres=tm_thres, is_display_detail=is_display_detail)
     print('--- Comparison is Over ! ---')
     pairs_to_nameidx(pairs, name_idx_file_path)
 
@@ -114,7 +115,7 @@ if __name__ == '__main__':
     # extract_data(pids, os.path.join(seq2pid_id_root, 'kinase_au.csv'))
     seq2pid_id_to_name_idx(seq2pid_id_file_path=os.path.join(seq2pid_id_root, 'kinase_au.csv'),
                            pdb_dir_path=pdb_root,
-                           name_idx_file_path=os.path.join(name_idx_root, 'kinase_TMscore_au.csv'), 
+                           name_idx_file_path=os.path.join(name_idx_root, 'kinase_name_idx(Good integrity).csv'), 
                            tm_thres=0.7,
                            is_display_detail=False)
     
