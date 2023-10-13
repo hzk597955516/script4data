@@ -32,5 +32,15 @@ def pairs2dict(pairs_path):
     
     return my_dict
 
+
+def load_gpcr_pids():
+    data = pd.read_csv('./all_gpcr_pdb_info.csv')
+    my_dict = data.to_dict('records')
+    pid = []
+    for i in my_dict:
+        pid.append(i['pdb_code'])
+    return pid
+
 if __name__ == '__main__':
-    data = csv2dict('./csv_result/result_7.csv')
+    print('ok')
+    

@@ -74,5 +74,6 @@ def test1():
 
 
 if __name__ == '__main__':
-    cut_mmcif_from_list(['7ENC'], mmcif_dir='C:/Research_Foundation/data/mmcifs_kinase',
-                        output_dir='./test4chains')
+    # cut_mmcif_from_list(['7ENC'], mmcif_dir='C:/Research_Foundation/data/mmcifs_kinase',
+                        #output_dir='./test4chains')
+    print('ok')

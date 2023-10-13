@@ -20,3 +20,10 @@ def movefiles2other(root, target):
             
     return num
 
+def mycopyfile(srcfile, dstpath):                      
+    fpath,fname = os.path.split(srcfile)           
+    if not os.path.exists(dstpath):
+        os.makedirs(dstpath)            
+    print(dstpath)
+    shutil.copy(srcfile, os.path.join(dstpath, fname))          
+        

@@ -14,8 +14,8 @@ from load_fasta import generate_seq2pid_id_csv
 
 logger = logging.getLogger()
 
-pdb_root = 'C:/Research_Foundation/data/protein_data_bank_kinase'
-mmcif_root = 'C:/Research_Foundation/data/mmcifs_kinase'
+pdb_root = 'C:/Research_Foundation/data/protein_data_bank'
+mmcif_root = 'C:/Research_Foundation/data/mmcifs'
 name_idx_root = 'C:/Research_Foundation/data/name_idxs'
 seq2pid_id_root = 'C:/Research_Foundation/data/seq2pid_id'
 pids_root = 'C:/Research_Foundation/data/raw_pairs_data'
@@ -113,10 +113,10 @@ if __name__ == '__main__':
     # prepare_data(pids)
     # dont forget to cut them !
     # extract_data(pids, os.path.join(seq2pid_id_root, 'kinase_au.csv'))
-    seq2pid_id_to_name_idx(seq2pid_id_file_path=os.path.join(seq2pid_id_root, 'kinase_au.csv'),
+    seq2pid_id_to_name_idx(seq2pid_id_file_path=os.path.join(seq2pid_id_root, 'gpcr_au.csv'),
                            pdb_dir_path=pdb_root,
-                           name_idx_file_path=os.path.join(name_idx_root, 'kinase_name_idx(Good integrity).csv'), 
-                           tm_thres=0.7,
+                           name_idx_file_path=os.path.join(name_idx_root, 'test_10_13.csv'), 
+                           tm_thres=1,
                            is_display_detail=False)
     
     

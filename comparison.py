@@ -10,7 +10,7 @@ import pandas as pd
 from build_pdb import cut_mmcif
 from down_mmcif import download_mmcif
 from utlity import mkdir, nameidx2dict
-
+from movefile import mycopyfile
 
 pdb_root = 'C:/Research_Foundation/data/protein_data_bank_kinase'
 mmcif_root = 'C:/Research_Foundation/data/mmcifs_kinase'
@@ -74,8 +74,11 @@ def iterate_a_seq(seq2chains, pdb_dir_path, num, tm_thres=0.7, is_display_detail
 
             # print(cur_chain + ' ' + next_chain + ' is {}'.format(tm))
 
-            if tm <= tm_thres and l1 / cur_len >= 0.8 and l2 / cur_len >= 0.8:
-                pairs.append([cur_chain, next_chain, tm])
+            if tm < tm_thres:
+                pairs.append([cur_chain, next_chain, cur_len, tm])
+                dis_path = 'C:/Research_Foundation/data/gpcr_pair_pdb'
+                mycopyfile(cur_path, os.path.join(dis_path, cur_chain + '_' + next_chain))
+                mycopyfile(next_path, os.path.join(dis_path, cur_chain + '_' + next_chain))
 
         print('--- {}th : {}th chain is over !---'.format(num, i))
 
@@ -88,7 +91,7 @@ def seq2pid_id_to_pairs(seq2pid_id, pdb_dir_path, tm_thres=0.7, is_display_detai
 
     all_pairs = []
     # candidates = list(seq2pid_id.values())
-    candidates = seq2pid_id
+    candidates = seq2pid_id[:10]
 
     num = 0
     for chains in candidates:
