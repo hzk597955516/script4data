@@ -3,6 +3,7 @@ import comparison
 import logging
 import os
 import pandas as pd
+import tqdm
 
 from mmcif_parsing import parse as mmcif_parse
 from Bio.PDB.PDBExceptions import PDBConstructionException
@@ -10,14 +11,16 @@ from utlity import seq2pid_id_to_dict, pairs_to_nameidx
 from comparison import seq2pid_id_to_pairs, TMscore
 from down_mmcif import download_mmcif_from_list, download_mmcif_quick
 from build_pdb import cut_mmcif_from_list
-from load_fasta import generate_seq2pid_id_csv
+from load_fasta import generate_seq2pid_id_csv, load_mmcif
+from load_csv import pairs2dict
+from movefile import mycopyfile
 
 logger = logging.getLogger()
 
-pdb_root = 'C:/Research_Foundation/data/protein_data_bank'
-mmcif_root = 'C:/Research_Foundation/data/mmcifs'
-name_idx_root = 'C:/Research_Foundation/data/name_idxs'
-seq2pid_id_root = 'C:/Research_Foundation/data/seq2pid_id'
+pdb_root = '/home/hezaikai/data/gpcr_pdb'
+mmcif_root = '/home/hezaikai/data/mmcif_data'
+name_idx_root = './result/name_idxs'
+seq2pid_id_root = './seq2pid_id'
 pids_root = 'C:/Research_Foundation/data/raw_pairs_data'
 
 
@@ -96,7 +99,11 @@ def one_step():
                            name_idx_file_path=os.path.join(name_idx_root, 'kinase_TMscore_au.csv'), 
                            tm_thres=0.7,
                            is_display_detail=False)
-    
+    seq2pid_id_to_name_idx(seq2pid_id_file_path=os.path.join(seq2pid_id_root, 'gpcr_au.csv'),
+                           pdb_dir_path=pdb_root,
+                           name_idx_file_path=os.path.join(name_idx_root, 'gpcr_name_idx.csv'), 
+                           tm_thres=1,
+                           is_display_detail=False)
 
 def kinase_pids():
     pids = []
@@ -105,7 +112,54 @@ def kinase_pids():
         pids.append(file[:4])
     return pids
     
+
+def get_by_mmcifs(root, seqs):
+
+    mmcif_file_names = os.listdir(root)
+    num = 0
+    for file_name in mmcif_file_names:
+        pid = file_name[: 4]
+        print('--- begin ' + pid + '! ---')
+        mmcif_info = load_mmcif(pid=pid,  file_path=os.path.join(root, file_name))
+        for chain_id, res in mmcif_info.items():
+            print('--- now is chain_' + chain_id + ' ! ---')
+            if res in seqs.keys():
+                seqs[res].append(pid + '_' + chain_id)
+            else:
+                seqs[res] = [pid + '_' + chain_id]
+        num += 1
+        print('--- end ' + pid + f'!(num: {num}) ---')
+        
+
+def len_pid_id(pid_id):
+    pid, c_id = pid_id.split('_')
+    chains = load_mmcif(pid=pid, file_path=os.path.join(mmcif_root, pid + '.cif'))
+    return len(chains[c_id])
+
+
+def postprocess():
     
+    pair_dict = pairs2dict('./name_idxs/(eigenfold)fs_TMscore_au.csv')
+    new_paris = []
+    pdb_path = '/home/hezaikai/data/fs_pdb'
+    
+    for pair in tqdm.tqdm(pair_dict):
+        
+        chain_A = pair['chain_A']
+        chain_B = pair['chain_B']
+        
+        cur_len = len_pid_id(chain_A)
+        pidA, idA = chain_A.split('_')
+        pidB, idB = chain_B.split('_')
+        
+        dis_path = './result/(eigenfold)fs_pair_pdb'
+        cur_path = os.path.join(pdb_path, pidA, chain_A + '.pdb')
+        next_path = os.path.join(pdb_path, pidB, chain_B + '.pdb')
+        mycopyfile(cur_path, os.path.join(dis_path, chain_A + '_' + chain_B))
+        mycopyfile(next_path, os.path.join(dis_path, chain_A + '_' + chain_B))
+        new_paris.append([chain_A, chain_B, cur_len, pair['TMscore']])
+        
+    pairs_to_nameidx(new_paris, name_idx_file_path=os.path.join(name_idx_root, '(eigenfold)fs_name_idx.csv'))
     
 if __name__ == '__main__':
     pids = kinase_pids()
@@ -113,10 +167,7 @@ if __name__ == '__main__':
     # prepare_data(pids)
     # dont forget to cut them !
     # extract_data(pids, os.path.join(seq2pid_id_root, 'kinase_au.csv'))
-    seq2pid_id_to_name_idx(seq2pid_id_file_path=os.path.join(seq2pid_id_root, 'gpcr_au.csv'),
-                           pdb_dir_path=pdb_root,
-                           name_idx_file_path=os.path.join(name_idx_root, 'test_10_13.csv'), 
-                           tm_thres=1,
-                           is_display_detail=False)
+    postprocess()
+    print('OK')
     
     

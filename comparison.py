@@ -1,10 +1,10 @@
 import subprocess
 import os
 import argparse
-import pymol
+# import pymol
 import random
 
-from pymol import cmd
+# from pymol import cmd
 import pandas as pd
 
 from build_pdb import cut_mmcif
@@ -12,10 +12,10 @@ from down_mmcif import download_mmcif
 from utlity import mkdir, nameidx2dict
 from movefile import mycopyfile
 
-pdb_root = 'C:/Research_Foundation/data/protein_data_bank_kinase'
-mmcif_root = 'C:/Research_Foundation/data/mmcifs_kinase'
-name_idx_root = 'C:/Research_Foundation/data/name_idxs'
-seq2pid_id_root = 'C:/Research_Foundation/data/seq2pid_id'
+pdb_root = '/home/hezaikai/data/gpcr_pdb'
+mmcif_root = '/home/hezaikai/data/mmcif_data'
+name_idx_root = './result/name_idxs'
+seq2pid_id_root = './seq2pid_id'
 pids_root = 'C:/Research_Foundation/data/raw_pairs_data'
 
 
@@ -54,7 +54,7 @@ def iterate_a_seq(seq2chains, pdb_dir_path, num, tm_thres=0.7, is_display_detail
         cur_path = os.path.join(pdb_dir_path, cur_chain[:4], cur_chain[:4] + '_' + cur_id + '.pdb')
 
         print('--- Now is {}th : {}th chain !---'.format(num, i))
-
+        print(cur_path)
         for j in range(i + 1, num_chain):
 
             next_chain = chains[j]
@@ -76,7 +76,7 @@ def iterate_a_seq(seq2chains, pdb_dir_path, num, tm_thres=0.7, is_display_detail
 
             if tm < tm_thres:
                 pairs.append([cur_chain, next_chain, cur_len, tm])
-                dis_path = 'C:/Research_Foundation/data/gpcr_pair_pdb'
+                dis_path = './result/gpcr_pair_pdb'
                 mycopyfile(cur_path, os.path.join(dis_path, cur_chain + '_' + next_chain))
                 mycopyfile(next_path, os.path.join(dis_path, cur_chain + '_' + next_chain))
 
@@ -91,7 +91,7 @@ def seq2pid_id_to_pairs(seq2pid_id, pdb_dir_path, tm_thres=0.7, is_display_detai
 
     all_pairs = []
     # candidates = list(seq2pid_id.values())
-    candidates = seq2pid_id[:10]
+    candidates = seq2pid_id
 
     num = 0
     for chains in candidates:
@@ -109,7 +109,7 @@ def seq2pid_id_to_pairs(seq2pid_id, pdb_dir_path, tm_thres=0.7, is_display_detai
 
 def TMalign(pid_id_1, pid_id_2, is_display_detail=False):
     
-    output = subprocess.getoutput('TMalign ' + pid_id_1 + ' ' + pid_id_2)
+    output = subprocess.getoutput('./TMalign ' + pid_id_1 + ' ' + pid_id_2)
     if is_display_detail:
         print(output)
     output = output.split('\n')

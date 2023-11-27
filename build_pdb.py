@@ -8,7 +8,8 @@ import tqdm
 from save_pdb import save_general_pdb
 from utlity import seq2pid_id_to_dict, mkdir
 from make_data_from_mmcif import process4single, process4protein, process4protein_au
-
+from load_csv import load_apo_holo_pids, load_fs_pids, load_gpcr_pids
+ 
 
 def build_A_seq(pid_same_chains, mmcif_dir, output_dir):
 
@@ -74,6 +75,7 @@ def test1():
 
 
 if __name__ == '__main__':
-    # cut_mmcif_from_list(['7ENC'], mmcif_dir='C:/Research_Foundation/data/mmcifs_kinase',
-                        #output_dir='./test4chains')
-    print('ok')
+    pids = load_fs_pids()
+    cut_mmcif_from_list(pids=pids, mmcif_dir='/home/hezaikai/data/mmcif_data',
+                        output_dir='/home/hezaikai/data/fs_pdb')
+    

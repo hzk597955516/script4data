@@ -41,6 +41,27 @@ def load_gpcr_pids():
         pid.append(i['pdb_code'])
     return pid
 
+
+def load_apo_holo_pids():
+    pids = set()
+    my_dict = pairs2dict('./name_idxs/(eigenfold)apo_holo_TMscore_au.csv')
+    for i in my_dict:
+        pids.add(i['chain_A'][:4])
+        pids.add(i['chain_B'][:4])
+    return list(pids)
+
+
+def load_fs_pids():
+    pids = set()
+    my_dict = pairs2dict('./name_idxs/(eigenfold)fs_TMscore_au.csv')
+    for i in my_dict:
+        pids.add(i['chain_A'][:4])
+        pids.add(i['chain_B'][:4])
+    return list(pids)
+
+
 if __name__ == '__main__':
+    pids = load_fs_pids()
+    print(pids)
     print('ok')
     
