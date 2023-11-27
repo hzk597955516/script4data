@@ -12,8 +12,8 @@ from down_mmcif import download_mmcif
 from utlity import mkdir, nameidx2dict
 from movefile import mycopyfile
 
-pdb_root = 'C:/Research_Foundation/data/protein_data_bank_kinase'
-mmcif_root = 'C:/Research_Foundation/data/mmcifs_kinase'
+pdb_root = 'C:/Research_Foundation/data/protein_data_bank'
+mmcif_root = 'C:/Research_Foundation/data/mmcifs'
 name_idx_root = 'C:/Research_Foundation/data/name_idxs'
 seq2pid_id_root = 'C:/Research_Foundation/data/seq2pid_id'
 pids_root = 'C:/Research_Foundation/data/raw_pairs_data'
@@ -218,11 +218,11 @@ if __name__ == '__main__':
     # check_pair('7FIM_P', '7RGP_P')
     # random_check_all('./name_idx/test_gpcr_tmscore_all.csv', n_sample=1)
 
-    # align_pairs(pid_id_1='7EGB_F', pid_id_2='7EGC_f', is_display_detail=True, is_align=True)
+    align_pairs(pid_id_1='1CEE_B', pid_id_2='2K42_A', is_display_detail=True, is_align=True)
     # chains1 = ['1HSH_A', '1HSH_B', '1HSH_C', '1HSH_D', '1HSI_A', '1HSI_B']
     # chains2 = ['1Q95_A', '1Q95_B', '1Q95_C', '1Q95_D', '1Q95_E', '1Q95_F', '1ZA1_A', '1ZA1_C']
     # print(TMalign(pid_id_1='C:/Research_Foundation/data/protein_data_bank/1HSI/1HSI_B.pdb', pid_id_2='C:/Research_Foundation/data/protein_data_bank/1HSH/1HSH_D.pdb', 
     # is_display_detail=True))
     # pairs = iterate_a_seq(chains2, pdb_root, 0, tm_thres=1)
-    random_check_all(name_idx_path=os.path.join(name_idx_root, 'kinase_name_idx(Good integrity).csv'), is_align=True)
+    # random_check_all(name_idx_path=os.path.join(name_idx_root, 'kinase_name_idx(Good integrity).csv'), is_align=True)
     

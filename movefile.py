@@ -27,3 +27,10 @@ def mycopyfile(srcfile, dstpath):
     print(dstpath)
     shutil.copy(srcfile, os.path.join(dstpath, fname))          
         
+
+def mycopyfile_cmp(add_info, srcfile, dstpath):
+                          
+    fpath,fname = os.path.split(srcfile)           
+    if not os.path.exists(dstpath):
+        os.makedirs(dstpath)            
+    shutil.copy(srcfile, os.path.join(dstpath, add_info + '_' + fname))

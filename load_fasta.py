@@ -228,11 +228,20 @@ def generate_seq2pid_id_csv(pids, mmcif_dir_path, save_path):
     filter_fun(seq2pid_id)
     data2cvs(seq2pid_id, save_path)
 
-
-if __name__ == "__main__":
+def generate_gpcr_seq2pid_id_csv():
     print('begin')
     data = pd.read_csv('./all_gpcr_pdb_info.csv')
     pids = list(data['pdb_code'])
     generate_seq2pid_id_csv(pids=pids,
                             mmcif_dir_path=mmcif_root, 
                             save_path='./seq2pid_id/gpcr_au.csv')
+    
+
+def len_pid_id(pid_id):
+    pid, c_id = pid_id.split('_')
+    chains = load_mmcif(pid=pid, file_path=os.path.join(mmcif_root, '3CAP.cif'))
+    return len(chains[c_id])
+
+
+if __name__ == "__main__":
+    print(len_pid_id('3CAP_A'))
